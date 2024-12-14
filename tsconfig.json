@@ -11,7 +11,7 @@
     "skipLibCheck": true,                        // Skip checking of declaration files for performance
     "moduleResolution": "node",                 // Resolve modules using Node.js module resolution
     "resolveJsonModule": true,                   // Allow importing JSON files
-    "noEmitOnError": true                        // Prevent emitting files if there are errors
+    "noEmitOnError": true,                        // Prevent emitting files if there are errors
     "noImplicitAny": false
   },
   "include": ["src"],                            // Include all files in the src folder
