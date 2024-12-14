@@ -7,6 +7,8 @@ app = 'email-post-relay'
 primary_region = 'fra'
 
 [build]
+build_command = "npm run build"
+
 
 [http_service]
   internal_port = 3000
