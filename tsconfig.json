@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES2022",                          // Target modern JavaScript
-    "module": "ESNext",                          // Use ES Modules for output
+    "target": "ESNext",                          // Target modern JavaScript
+    "module": "CommonJS",                          // Use ES Modules for output
     "lib": ["ES2022"],                           // Include ES2022 features
     "outDir": "./dist",                          // Output compiled files to the dist folder
     "rootDir": "./src",                          // Specify the root folder for source files
