@@ -1,7 +1,11 @@
 import 'dotenv/config';
 
-import { assertValue } from './utils/assertValue';
+import axios from 'axios';
+
+import { assertValue } from './utils/assert-value';
+import { labelToPostUrls } from './utils/label-to-post-urls';
 import { connect, fetch, minutesAgo, openInbox, search } from './utils/mail';
+import { postMessage } from './utils/post-message';
 
 const imap = await connect({
   user: assertValue(process.env.IMAPI_USER, 'IMAPI_USER'),
@@ -24,6 +28,10 @@ mailEmitter.on('mail', async () => {
     bodies: '',
     struct: true,
   });
-
-  console.log('messages', JSON.stringify(messages, null, 2));
+  for (const message of messages) {
+    const urls = labelToPostUrls(message.attributes);
+    for (const url of urls) {
+      await postMessage(url, message);
+    }
+  }
 });
