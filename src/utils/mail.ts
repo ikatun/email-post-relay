@@ -59,6 +59,18 @@ export function search(imap: Imap, search: any[]) {
   });
 }
 
+export function markAsRead(imap: Imap, results: number[]) {
+  return new Promise<void>((resolve, reject) => {
+    imap.setFlags(results, ['\\Seen'], (err) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve();
+    });
+  });
+}
+
 export interface ParsedEmail {
   bodies: string[];
   attributes: Imap.ImapMessageAttributes;

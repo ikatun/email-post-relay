@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 import { assertValue } from './utils/assert-value';
 import { labelToPostUrls } from './utils/label-to-post-urls';
-import { connect, fetch, minutesAgo, openInbox, search } from './utils/mail';
+import { connect, fetch, markAsRead, minutesAgo, openInbox, search } from './utils/mail';
 import { postMessage } from './utils/post-message';
 
 export async function relayEmailsToPostEndpoint() {
@@ -16,7 +16,7 @@ export async function relayEmailsToPostEndpoint() {
   });
 
   console.log('connected to IMAP server');
-  const { mailEmitter } = await openInbox(imap, { mailboxName: 'INBOX', openReadOnly: true });
+  const { mailEmitter } = await openInbox(imap, { mailboxName: 'INBOX', openReadOnly: false });
 
   console.log('inbox opened, waiting for new emails...');
   mailEmitter.on('mail', async () => {
@@ -31,6 +31,14 @@ export async function relayEmailsToPostEndpoint() {
       bodies: '',
       struct: true,
     });
+
+    try {
+      console.log('marking as read', seqIds);
+      await markAsRead(imap, seqIds);
+    } catch (e) {
+      console.log('marking as read error', e);
+    }
+
     for (const message of messages) {
       const urls = labelToPostUrls(message.attributes);
       for (const url of urls) {
