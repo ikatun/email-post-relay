@@ -7,9 +7,6 @@ function printAxiosError(error) {
     // The request was made and the server responded with a status code
     console.error(`Error: ${error.response.status} - ${error.response.statusText}`);
     console.error('Response Data:', error.response.data);
-  } else if (error.request) {
-    // The request was made but no response was received
-    console.error('No response received:', error.request);
   } else {
     // Something else triggered the error
     console.error('Error:', error.message);

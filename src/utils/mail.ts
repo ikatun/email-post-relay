@@ -5,6 +5,8 @@ import Imap from 'imap';
 import { ParsedMail as ParsedEmailBody, simpleParser } from 'mailparser';
 import TypedEmitter from 'typed-emitter';
 
+import { streamToString } from './stream-to-string';
+
 export function minutesAgo(min: number) {
   const date = new Date();
   date.setMinutes(date.getMinutes() - min);
@@ -58,16 +60,16 @@ export function search(imap: Imap, search: any[]) {
 }
 
 export interface ParsedEmail {
-  bodies: ParsedEmailBody[];
+  bodies: string[];
   attributes: Imap.ImapMessageAttributes;
 }
 
 function readMessageStream(message: Imap.ImapMessage) {
   return new Promise<ParsedEmail>((resolve, reject) => {
-    const bodiesPromises = new Array<Promise<ParsedEmailBody>>();
+    const bodiesPromises = new Array<Promise<string>>();
     let attributes: Imap.ImapMessageAttributes;
 
-    message.on('body', (bodyStream: Stream) => bodiesPromises.push(simpleParser(bodyStream)));
+    message.on('body', (bodyStream: Stream) => bodiesPromises.push(streamToString(bodyStream)));
     message.on('attributes', (attr) => (attributes = attr));
     message.on('end', async () => resolve({ bodies: await Promise.all(bodiesPromises), attributes }));
     message.on('error', reject);

@@ -34,7 +34,7 @@ export async function relayEmailsToPostEndpoint() {
     for (const message of messages) {
       const urls = labelToPostUrls(message.attributes);
       for (const url of urls) {
-        await postMessage(url, message);
+        await postMessage(url, message.bodies.join('\n\n'));
       }
     }
   });
