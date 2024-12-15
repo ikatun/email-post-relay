@@ -20,8 +20,6 @@ export async function relayEmailsToPostEndpoint() {
 
   console.log('inbox opened, waiting for new emails...');
   mailEmitter.on('mail', async () => {
-    console.log('got new email!');
-
     const searchCriteria = ['UNSEEN', ['SINCE', minutesAgo(10)], ['X-GM-LABELS', 'post-email']];
 
     const seqIds = await search(imap, searchCriteria);

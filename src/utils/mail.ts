@@ -37,7 +37,6 @@ export function openInbox(imap: Imap, { mailboxName, openReadOnly }) {
       const mailEmitter = new EventEmitter() as MailListener;
 
       imap.on('mail', (count) => {
-        console.log('got mail event', count);
         mailEmitter.emit('mail', count);
       });
 
