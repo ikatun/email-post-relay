@@ -21,8 +21,14 @@ export async function relayEmailsToPostEndpoint() {
   console.log('inbox opened, waiting for new emails...');
   mailEmitter.on('mail', async () => {
     console.log('got new email!');
-    const seqIds = await search(imap, ['UNSEEN', ['SINCE', minutesAgo(10)]]);
+
+    const searchCriteria = ['UNSEEN', ['SINCE', minutesAgo(10)], ['X-GM-LABELS', 'post-email']];
+
+    const seqIds = await search(imap, searchCriteria);
     console.log('unread: ', seqIds);
+    if (!seqIds.length) {
+      return;
+    }
     const messages = await fetch(imap, seqIds, {
       bodies: '',
       struct: true,
