@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const headers = JSON.parse(process.env.POST_HEADERS ?? '{}');
+const authHeaders = JSON.parse(process.env.POST_HEADERS ?? '{}');
 
 function printAxiosError(error) {
   if (error.response) {
@@ -15,9 +15,14 @@ function printAxiosError(error) {
   // console.error(error);
 }
 
-export async function postMessage(url: string, message: any) {
+export async function postMessage(url: string, message: string) {
   try {
-    await axios.post(url, message, { headers });
+    const headers = {
+      ...authHeaders,
+      'Content-Type': 'text/plain',
+    };
+    const config = { headers };
+    await axios.post(url, message, config);
     console.log('POST to url OK', url);
   } catch (e) {
     console.log('POST to url ERROR', url);
