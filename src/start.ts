@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { manageEmailPostRelay } from './manage-email-post-relay';
+import { relayEmailsToPostEndpoint } from './relay-emails-to-post-endpoint';
 
 const app = express();
 const port = process.env.PORT ?? '3000';
@@ -13,4 +13,4 @@ app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
 
-manageEmailPostRelay().catch(console.error);
+relayEmailsToPostEndpoint().catch(console.error);

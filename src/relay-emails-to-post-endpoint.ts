@@ -1,16 +1,30 @@
 import 'dotenv/config';
 
+import retry from 'async-retry';
+
 import { assertValue } from './utils/assert-value';
 import { labelToPostUrls } from './utils/label-to-post-urls';
 import { connect, fetch, markAsRead, minutesAgo, openInbox, search } from './utils/mail';
 import { postMessage } from './utils/post-message';
 
-export async function relayEmailsToPostEndpoint() {
+export async function relayUserEmailsToPostEndpoint({
+  host,
+  port,
+  user,
+  password,
+}: {
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+}) {
+  console.log('listening for', host, port, user, password);
+
   const imap = await connect({
-    user: assertValue(process.env.IMAPI_USER, 'IMAPI_USER'),
-    password: assertValue(process.env.IMAPI_PASSWORD, 'IMAPI_PASSWORD'),
-    host: assertValue(process.env.IMAPI_HOST, 'IMAPI_HOST'),
-    port: parseInt(assertValue(process.env.IMAPI_PORT, 'IMAPI_PORT')),
+    user: user,
+    password: password,
+    host: host,
+    port: port,
     tls: true,
     tlsOptions: { rejectUnauthorized: false },
   });
@@ -52,4 +66,17 @@ export async function relayEmailsToPostEndpoint() {
     imap.on('close', reject);
     imap.on('end', resolve);
   });
+}
+
+export async function relayEmailsToPostEndpoint() {
+  const authsString = assertValue(process.env.IMAP_AUTHS, 'IMAP_AUTHS');
+  const auths = authsString.split('|').map((auth) => {
+    const [host, port, user, password] = auth.split(':');
+    return { host, user, password, port: parseInt(port) };
+  });
+  for (const auth of auths) {
+    retry(() => relayUserEmailsToPostEndpoint(auth), {
+      retries: 5,
+    }).catch(console.error);
+  }
 }
