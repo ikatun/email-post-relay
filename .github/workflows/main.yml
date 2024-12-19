@@ -1,22 +1,26 @@
----
-name: 'deploy'
+name: Deploy to Dokku
 
 on:
   push:
     branches:
-      - main
+      - main  # Trigger deploy on push to the main branch
 
 jobs:
   deploy:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Cloning repo
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+    runs-on: ubuntu-latest
 
-      - name: Push to dokku
-        uses: dokku/github-action@master
-        with:
-          git_remote_url: 'ssh://dokku@email-post-relay.ivokatunaric.from.hr:22'
-          ssh_private_key: ${{ secrets.DOKKU_SECRET }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH key for Dokku
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DOKKU_SECRET }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ivokatunaric.from.hr >> ~/.ssh/known_hosts
+
+      - name: Deploy to Dokku
+        run: |
+          git remote add dokku dokku@ivokatunaric.from.hr:email-post-relay
+          git push dokku main:master
