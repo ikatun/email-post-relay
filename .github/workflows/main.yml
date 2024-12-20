@@ -22,5 +22,5 @@ jobs:
 
       - name: Deploy to Dokku
         run: |
-          git remote add dokku dokku@ivokatunaric.from.hr:email-post-relay
+          git remote add dokku dokku@technobabble.hr:email-post-relay
           git push dokku main:master --force
